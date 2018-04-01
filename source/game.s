@@ -132,7 +132,7 @@ topBall:
 	
 	mov   r2, r6						@ Load image adress to pass into drawTile
 	
-	bl	 DrawBall					    @ Branch and link to drawTile		
+	//bl	 DrawBall					    @ Branch and link to drawTile		
 	
 	add  r4, #64						@ Increment by 32 pixels in the X direction, this spaces our ouxels by the size of each cell
 
@@ -162,7 +162,7 @@ topTOB:
 	
 	mov   r2, r6						@ Load image adress to pass into drawTile
 	
-	bl	 DrawBrick					    @ Branch and link to drawTile		
+	bl	 DrawTile					    @ Branch and link to drawTile		
 	
 	add  r4, #64						@ Increment by 32 pixels in the X direction, this spaces our ouxels by the size of each cell
 
@@ -190,7 +190,7 @@ topTTwB:
 	
 	mov  r2, r6						@ Load image adress to pass into drawTile
 	
-	bl	 DrawBrick					    @ Branch and link to drawTile		
+	//bl	 DrawBrick					    @ Branch and link to drawTile		
 	
 	add  r4, #64						@ Increment by 32 pixels in the X direction, this spaces our ouxels by the size of each cell
 
@@ -218,7 +218,7 @@ topTThB:
 	
 	mov   r2, r6						@ Load image adress to pass into drawTile
 	
-	bl	  DrawBrick					    @ Branch and link to drawTile		
+	//bl	  DrawBrick					    @ Branch and link to drawTile		
 	
 	add   r4, #64						@ Increment by 32 pixels in the X direction, this spaces our ouxels by the size of each cell
 

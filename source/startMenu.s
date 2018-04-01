@@ -14,7 +14,7 @@ startMenu:
 	
 	ldr		r2, =mainMenu
 	
-	bl	DrawMenu
+	//bl	DrawMenu
 	
 	
 ////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ cursorCheck:
 	
 	ldr		r2, =cursor
 	
-	bl		DrawCursor
+	//bl		DrawCursor
 	
 	cmp		r10, #1
 	moveq	r1,	#426
@@ -36,7 +36,7 @@ cursorCheck:
 	
 	ldr		r2, =eraseCursor
 	
-	bl		DrawCursor
+	//bl		DrawCursor
 	
 buttonInput:
 

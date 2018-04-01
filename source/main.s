@@ -1,8 +1,8 @@
 @ Code section
 .section    .text
 .global DrawTile
-
-
+.global DrawPaddle
+.global Drawimage
 
 .global main
 main:
@@ -58,6 +58,15 @@ checkIndeces:
 	blt top
 	
 done:
+
+	mov r0, #520
+	mov r1, #750
+	ldr r2, =paddle 
+
+	bl  DrawPaddle
+
+	bl  DrawChar
+
 	haltLoop$:
 	b 	  haltLoop$
 
@@ -219,7 +228,7 @@ loop1:
 	mov	  r1, r5							@ Pass y coordinate into DrawPixel
 	
 	ldr   r2, [r6, r9, lsl #2]				@ 
-	bl    DrawPixel1						@ 
+	bl    DrawPixel						@ 
 	add   r9, #1							@
 	add   r4, #1							@
 	
@@ -238,6 +247,112 @@ loop1:
 	bx     lr	 							@
 
 
+DrawPaddle:
+	push {r4- r10, lr}						@
+	
+	mov   r4, r0							@ X start coordinate
+	mov   r5, r1							@ Y start coordinate
+	mov   r6, r2							@ Image address
+	
+	add   r7, r4, #64						@ Initialize the length
+	add   r8, r5, #32						@ Initialize the height
+
+	mov   r9, #0							@ Pixel counter
+	mov	  r10, r4							@ r10 = r4, so we can reinitialize r4
+	
+paddleLoop:
+	mov	  r0, r4							@ Pass x coordinate into DrawPixel
+	mov	  r1, r5							@ Pass y coordinate into DrawPixel
+	
+	ldr   r2, [r6, r9, lsl #2]				@ 
+	bl    DrawPixel						@ 
+	add   r9, #1							@
+	add   r4, #1							@
+	
+
+				 
+	cmp   r4, r7							@ Hard coded for easier alterations later on
+	blt   paddleLoop								@ 
+
+	mov    r4, r10							@ Hard coded for easier alterations later on
+	add    r5, #1							@
+			
+	cmp   r5, r8							@ Hard coded for easier alterations later on
+	blt   paddleLoop								@ 
+	
+	pop   {r4-r10, pc}						@
+	bx     lr	 							@
+
+DrawImage:
+	mov	  fp, sp
+	push {r4}
+	
+	mov   r4, #0
+	
+loop:
+	cmp   r4, #20
+	bgt   done
+
+	mov   r0, #200
+	mov   r1, #200
+	mov   r3, #0xFF0
+	
+	bl	  DrawPixel
+	add   r4, #1
+	add   r1, #1
+	b	  DrawImage
+
+DrawChar:
+	push		{r4-r8, lr}
+
+	chAdr		.req	r4
+	px		.req	r5
+	py		.req	r6
+	row		.req	r7
+	mask	.req	r8
+
+	ldr		chAdr, =font			@ load the address of the font map
+	mov		r0, #'B'				@ load the character into r0
+	add		chAdr,	r0, lsl #4		@ char address = font base + (char * 16)
+
+	mov		py, #200				@ init the Y coordinate (pixel coordinate)
+
+charLoop$:
+	mov		px, #200				@ init the X coordinate
+
+	mov		mask, #0x01				@ set the bitmask to 1 in the LSB
+	
+	ldrb	row, [chAdr], #1	@ load the row byte, post increment chAdr
+
+rowLoop$:
+	tst		row,	mask			@ test row byte against the bitmask
+	beq		noPixel$
+
+	mov		r0, px
+	mov		r1, py	
+	mov		r2, #0x00FF0000			@ red
+	bl		DrawPixel				@ draw red pixel at (px, py)
+	
+noPixel$:
+	add		px, #1					@ increment x coordinate by 1
+	lsl		mask, #1				@ shift bitmask left by 1
+
+	tst		mask,	#0x100			@ test if the bitmask has shifted 8 times (test 9th bit)
+	beq		rowLoop$
+
+	add		py, #1					@ increment y coordinate by 1
+
+	tst		chAdr, #0xF		
+	bne		charLoop$				@ loop back to charLoop$, unless address evenly divisibly by 16 (ie: at the next char)
+
+	.unreq	chAdr
+	.unreq	px
+	.unreq	py
+	.unreq	row
+	.unreq	mask
+
+	pop		{r4-r8, pc}
+
 
 //////////////////////////////////////////
 //										//
@@ -245,7 +360,7 @@ loop1:
 //										//
 //										//
 //////////////////////////////////////////
-DrawPixel1:
+DrawPixel:
 	push	{r4, r5}						@
 	
 	offset	.req	r4						@
